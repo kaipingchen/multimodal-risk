@@ -20,12 +20,13 @@ logging.basicConfig(level=logging.INFO)
 
 azure_credential = AzureCliCredential()
 
+
 token_provider = get_bearer_token_provider(
     azure_credential, "https://cognitiveservices.azure.com/.default"
 )
 
 # Key
-endpoint = "https://chatgpt-simulation.openai.azure.com/"
+endpoint = os.getenv("ENDPOINT_URL", "https://chatgpt-simulation.openai.azure.com/")  
 
 
 async def _load_image_in_messages(messages: list[dict[str, str]]):
@@ -100,9 +101,9 @@ async def generate_from_openai_chat_completion(
     """
     client = openai.AsyncAzureOpenAI(
         azure_endpoint=endpoint,
-        api_version="2024-02-15-preview",
-        azure_ad_token_provider=token_provider,
-        # api_key=api_key,
+        api_version="2024-05-01-preview",
+        #azure_ad_token_provider=token_provider,
+        api_key=os.environ['API_KEY'],
     )
     limiter = aiolimiter.AsyncLimiter(requests_per_minute)
     async_responses = [
@@ -164,6 +165,9 @@ if __name__ == "__main__":
     import json
     import urllib
     import base64
+    
+    if 'API_KEY' not in os.environ:
+        raise ValueError("Please export your API key with the following syntax:\n\nLinux: export API_KEY=\"<YOUR API KEY>\"\n\nWindows: set API_KEY=\"<YOUR API KEY>\"")
 
     url = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
 
@@ -208,7 +212,7 @@ if __name__ == "__main__":
     all_responses = run_batch_chat_completion(
         all_messages=all_messages,
         batch_size=128,
-        model="gpt-4o-2",
+        model="gpt-4o",
         temperature=0.3,
         max_tokens=200,
         top_p=1.0,
