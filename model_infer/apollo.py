@@ -67,6 +67,11 @@ def main():
             question = f"{row['cleaned_text']}\nPredict whether a risk event is going to occur in the video by answering \"Yes\" or \"No\", and then provide a clear, step-by-step explanation of your reasoning for your answer. Format your response as follows:\nAnswer: [Yes/No]\nReasoning: [Explanation]"
         elif args.prompt_type == "mcq":
             question = f"Answer the following multiple-choice question with ONLY the letter of the correct answer A, B, C, or D.\n{row['question']}"
+
+#         add_prompt = """Risk: arrest, fire, heavy smoke,  tear gas, breaking things, pepper balls, throwing bottles, breaching iron barrier/fence, water gun, blocking highway, climbing onto cars, cars running into protestors, physical aggression (police hitting protestors with batons, fights, riding on fallen people, kicking).
+# Nonrisk: singing with drum, marching, speech, waving flags, holding signs, shaking hands/talking with police, allow police to herd them, protesting while not disturbing traffic/business operations.
+# Given the above information, answer the following question:"""
+#         question = add_prompt + "\n" + question
         
         try:
             mm_data, replace_string = mm_processor.load_video(video_path)

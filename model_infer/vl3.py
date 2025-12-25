@@ -14,7 +14,7 @@ def parse_args():
     
     # Prompt options
     parser.add_argument("--prompt_type", type=str, default="with_description", 
-                        choices=["with_description", "basic", "mcq"],
+                        choices=["with_description", "basic", "mcq", "basic_rl"],
                         help="Type of prompt to use")
     
     return parser.parse_args()
@@ -47,6 +47,13 @@ def main():
             instruct = f"{row['cleaned_text']}\nPredict whether a risk event is going to occur in the video by answering \"Yes\" or \"No\", and then provide a clear, step-by-step explanation of your reasoning for your answer. Format your response as follows:\nAnswer: [Yes/No]\nReasoning: [Explanation]"
         elif args.prompt_type == "mcq":
             instruct = f"Answer the following multiple-choice question with ONLY the letter of the correct answer A, B, C, or D.\n{row['question']}"
+        elif args.prompt_type == "basic_rl":
+            instruct = "Predict whether a risk event is going to occur in the video by answering \"Yes\" or \"No\""
+
+        add_prompt = """Risk: arrest, fire, heavy smoke,  tear gas, breaking things, pepper balls, throwing bottles, breaching iron barrier/fence, water gun, blocking highway, climbing onto cars, cars running into protestors, physical aggression (police hitting protestors with batons, fights, riding on fallen people, kicking).
+Nonrisk: singing with drum, marching, speech, waving flags, holding signs, shaking hands/talking with police, allow police to herd them, protesting while not disturbing traffic/business operations.
+Given the above information, answer the following question:"""
+#         instruct = add_prompt + "\n" + instruct
         
         conversation = [
             {"role": "system", "content": "You are a helpful assistant."},
