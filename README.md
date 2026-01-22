@@ -6,10 +6,9 @@
 
 <h5 align="center">
 
-[![Python](https://img.shields.io/badge/Python-3.12+-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-EE4C2C.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![vLLM](https://img.shields.io/badge/vLLM-Inference-FF6B6B.svg)](https://github.com/vllm-project/vllm)
-[![HuggingFace](https://img.shields.io/badge/HuggingFace-Models-FFD21E.svg?logo=huggingface&logoColor=black)](https://huggingface.co/)
+[![arXiv](https://img.shields.io/badge/arXiv-2601.03369-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2601.03369)
+[![Dataset](https://img.shields.io/badge/HuggingFace-Dataset-FFD21E.svg?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/Yogesh914/RiskCueBench)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 </h5>
