@@ -2,7 +2,7 @@
     <img src="assets/risk-mitigation.png" width="100" style="margin-bottom: 0.2;"/>
 </p>
 
-<h2 align="center">RiskCueBench: Benchmarking Anticipatory Reasoning from Early Risk Cues in Video-Language Models</h2>
+<h2 align="center">RiskCueBench: Benchmarking Anticipatory Reasoning from Early Risk Cues in VLMs</h2>
 
 <h5 align="center">
 
