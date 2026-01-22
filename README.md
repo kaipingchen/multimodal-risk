@@ -1,8 +1,7 @@
 <h2 align="center">
     <img src="assets/risk-mitigation.png" width="35" style="vertical-align: middle;"/>
-    &nbsp;Multimodal Risk
+    &nbsp;A VLM Benchmarking Framework for Situational Risk Reasoning
 </h2>
-<h4 align="center">A VLM Benchmarking Framework for Situational Risk Reasoning</h4>
 
 <h5 align="center">
 
