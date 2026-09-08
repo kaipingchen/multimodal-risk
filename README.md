@@ -1,15 +1,18 @@
 <p align="center">
-  <img src="assets/risk-mitigation.png" width="100" alt="RiskCueBench" />
+    <img src="assets/risk-mitigation.png" width="100" style="margin-bottom: 0.2;"/>
 </p>
 
-# RiskCueBench
+<h2 align="center">RiskCueBench: Evaluating Vision Language Models for Anticipatory Risk Reasoning in Videos</h2>
 
-**Benchmarking Anticipatory Reasoning from Early Risk Cues in Video-Language Models**
+<h5 align="center">
 
 [![arXiv](https://img.shields.io/badge/arXiv-2601.03369-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2601.03369)
 [![Dataset](https://img.shields.io/badge/HuggingFace-Dataset-FFD21E.svg?logo=huggingface&logoColor=white)](https://huggingface.co/datasets/Yogesh914/RiskCueBench)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
+</h5>
+---
 
 RiskCueBench evaluates whether video-language models can anticipate incidents from early visual cues. This repository provides tools to collect challenging videos, run models, and calculate risk-prediction and reasoning metrics.
 
