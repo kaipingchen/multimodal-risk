@@ -7,7 +7,7 @@
 **Benchmarking Anticipatory Reasoning from Early Risk Cues in Video-Language Models**
 
 [![arXiv](https://img.shields.io/badge/arXiv-2601.03369-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2601.03369)
-[![Dataset](https://img.shields.io/badge/HuggingFace-Dataset-FFD21E.svg?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/Yogesh914/RiskCueBench)
+[![Dataset](https://img.shields.io/badge/HuggingFace-Dataset-FFD21E.svg?logo=huggingface&logoColor=white)](https://huggingface.co/datasets/Yogesh914/RiskCueBench)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
