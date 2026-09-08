@@ -6,7 +6,10 @@
 
 **Benchmarking Anticipatory Reasoning from Early Risk Cues in Video-Language Models**
 
-[Paper](https://arxiv.org/abs/2601.03369) · [Hand-annotated dataset on Hugging Face](https://huggingface.co/datasets/Yogesh914/RiskCueBench)
+[![arXiv](https://img.shields.io/badge/arXiv-2601.03369-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2601.03369)
+[![Dataset](https://img.shields.io/badge/HuggingFace-Dataset-FFD21E.svg?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/Yogesh914/RiskCueBench)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 RiskCueBench evaluates whether video-language models can anticipate incidents from early visual cues. This repository provides tools to collect challenging videos, run models, and calculate risk-prediction and reasoning metrics.
 
