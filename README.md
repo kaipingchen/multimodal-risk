@@ -12,7 +12,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 </h5>
----
 
 RiskCueBench evaluates whether video-language models can anticipate incidents from early visual cues. This repository provides tools to collect challenging videos, run models, and calculate risk-prediction and reasoning metrics.
 
