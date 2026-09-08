@@ -9,10 +9,10 @@ on HuggingFace model repository.
 """
 
 import os
-os.environ['HF_HOME'] = "/data/yogesh/cache"
 os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
-os.environ['VLLM_CACHE_ROOT'] = '/data/yogesh/cache'
 
+import av
+import numpy as np
 import random
 from contextlib import contextmanager
 from dataclasses import asdict
@@ -400,10 +400,129 @@ def run_qwen3_vl(questions: list[str], modality: str) -> ModelRequestData:
     )
 
 
+def run_qwen_family(
+    model_name: str,
+    questions: list[str],
+    modality: str,
+    *,
+    max_model_len: int = 8192,
+    max_num_seqs: int = 1,
+) -> ModelRequestData:
+    engine_args = EngineArgs(
+        model=model_name,
+        max_model_len=max_model_len,
+        max_num_seqs=max_num_seqs,
+        mm_processor_kwargs={
+            "min_pixels": 28 * 28,
+            "max_pixels": 1280 * 28 * 28,
+            "fps": 1,
+        },
+        limit_mm_per_prompt={modality: 1},
+    )
+
+    if modality == "image":
+        placeholder = "<|image_pad|>"
+    elif modality == "video":
+        placeholder = "<|video_pad|>"
+
+    prompts = [
+        (
+            "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n"
+            f"<|im_start|>user\n<|vision_start|>{placeholder}<|vision_end|>"
+            f"{question}<|im_end|>\n"
+            "<|im_start|>assistant\n"
+        )
+        for question in questions
+    ]
+
+    return ModelRequestData(
+        engine_args=engine_args,
+        prompts=prompts,
+    )
+
+def run_mimo_vl_rl(questions: list[str], modality: str) -> ModelRequestData:
+    return run_qwen_family(
+        "XiaomiMiMo/MiMo-VL-7B-RL-2508",
+        questions,
+        modality,
+        max_model_len=8192,
+    )
+
+def run_mimo_vl_sft(questions: list[str], modality: str) -> ModelRequestData:
+    return run_qwen_family(
+        "XiaomiMiMo/MiMo-VL-7B-SFT-2508",
+        questions,
+        modality,
+        max_model_len=8192,
+    )
+
+def run_qwen3_vl_8b_instruct(
+    questions: list[str], modality: str
+) -> ModelRequestData:
+    return run_qwen_family(
+        "Qwen/Qwen3-VL-8B-Instruct",
+        questions,
+        modality,
+        max_model_len=8192,
+    )
+
+def run_qwen3_vl_8b_thinking(
+    questions: list[str], modality: str
+) -> ModelRequestData:
+    return run_qwen_family(
+        "Qwen/Qwen3-VL-8B-Thinking",
+        questions,
+        modality,
+        max_model_len=8192,
+    )
+
+def run_internvl3_5(questions: list[str], modality: str) -> ModelRequestData:
+    model_name = "OpenGVLab/InternVL3_5-8B"
+
+    engine_args = EngineArgs(
+        model=model_name,
+        trust_remote_code=True,
+        max_model_len=8192,
+        limit_mm_per_prompt={modality: 1},
+    )
+
+    if modality == "image":
+        placeholder = "<image>"
+    elif modality == "video":
+        placeholder = "<video>"
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+    messages = [
+        [{"role": "user", "content": f"{placeholder}\n{question}"}]
+        for question in questions
+    ]
+    prompts = tokenizer.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=True
+    )
+
+    # Stop tokens for InternVL
+    # models variants may have different stop tokens
+    # please refer to the model card for the correct "stop words":
+    # https://huggingface.co/OpenGVLab/InternVL3_5-8B
+    stop_tokens = ["<|endoftext|>", "<|im_start|>", "<|im_end|>", "<|end|>"]
+    stop_token_ids = [tokenizer.convert_tokens_to_ids(i) for i in stop_tokens]
+    stop_token_ids = [token_id for token_id in stop_token_ids if token_id is not None]
+
+    return ModelRequestData(
+        engine_args=engine_args,
+        prompts=prompts,
+        stop_token_ids=stop_token_ids,
+    )
+
 model_example_map = {
     "glm4_1v": run_glm4_1v,
     "hyperclovax_seed_vision": run_hyperclovax_seed_vision,
     "internvl_chat": run_internvl,
+    "internvl3_5_8b": run_internvl3_5,
+    "mimo_vl_7b_rl_2508": run_mimo_vl_rl,
+    "mimo_vl_7b_sft_2508": run_mimo_vl_sft,
+    "qwen3_vl_8b_instruct": run_qwen3_vl_8b_instruct,
+    "qwen3_vl_8b_thinking": run_qwen3_vl_8b_thinking,
     "keye_vl1_5": run_keye_vl1_5,
     "llava-next-video": run_llava_next_video,
     "llava-onevision": run_llava_onevision,
@@ -538,6 +657,29 @@ def prepare_inputs_for_vllm(messages, processor):
     }
 
 
+def prepare_internvl_video(video_path, prompt, tokenizer, fps):
+    """Sample RGB frames at the requested rate for vLLM's InternVL backend."""
+    if fps <= 0:
+        raise ValueError("fps must be positive")
+    frames = []
+    next_time = 0.0
+    with av.open(video_path) as container:
+        stream = container.streams.video[0]
+        rate = float(stream.average_rate or fps)
+        for index, frame in enumerate(container.decode(video=0)):
+            timestamp = float(frame.time) if frame.time is not None else index / rate
+            if timestamp >= next_time:
+                frames.append(frame.to_ndarray(format="rgb24"))
+                next_time = timestamp + 1.0 / fps
+    if not frames:
+        raise ValueError(f"No video frames decoded: {video_path}")
+    text = tokenizer.apply_chat_template(
+        [{"role": "user", "content": f"<video>\n{prompt}"}],
+        tokenize=False, add_generation_prompt=True,
+    )
+    return {"prompt": text, "multi_modal_data": {"video": np.stack(frames)}}
+
+
 def parse_args():
     parser = FlexibleArgumentParser(
         description="Demo on using vLLM for offline inference with "
@@ -659,7 +801,12 @@ def run_dataset_inference(args):
     model_name = req_data.engine_args.model
     
     # Initialize processor and vLLM model
-    processor = AutoProcessor.from_pretrained(model_name, trust_remote_code=True)
+    processor = None
+    tokenizer = None
+    if model in {"internvl_chat", "internvl3_5_8b"}:
+        tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+    else:
+        processor = AutoProcessor.from_pretrained(model_name, trust_remote_code=True)
     
     engine_args = asdict(req_data.engine_args) | {
         "seed": args.seed,
@@ -677,6 +824,7 @@ def run_dataset_inference(args):
         temperature=0,
         max_tokens=4048,
         top_k=-1,
+        stop_token_ids=req_data.stop_token_ids,
     )
     
     results = []
@@ -708,7 +856,11 @@ def run_dataset_inference(args):
             ]
             
             # Prepare inputs for vLLM
-            vllm_input = prepare_inputs_for_vllm(messages, processor)
+            vllm_input = (
+                prepare_internvl_video(video_path, prompt, tokenizer, args.fps)
+                if tokenizer is not None
+                else prepare_inputs_for_vllm(messages, processor)
+            )
             
             # Generate with vLLM
             outputs = llm.generate([vllm_input], sampling_params=sampling_params)
