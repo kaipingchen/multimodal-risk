@@ -40,3 +40,11 @@ See [inference preparation](model_infer/README.md#prepare-the-input) for creatin
 ## Analysis
 
 Open [figures/plots.ipynb](figures/plots.ipynb) with `figures/` as the working directory. It uses the bundled `figures/data/` inputs and requires Jupyter, matplotlib, and scipy in addition to the evaluation dependencies.
+
+## Cite
+@InProceedings{Sha2026,
+    author = {Luo, Sha and Prabhu, Yogesh and Ossowski, Tim and Chen, Kaiping and Hu, Junjie},
+    title  = {RiskCueBench: Evaluating Vision-Language Models for Anticipatory Risk Reasoning in Videos},
+    booktitle = {ACM EMNLP Main Conference},
+    year   = {2026}
+}
